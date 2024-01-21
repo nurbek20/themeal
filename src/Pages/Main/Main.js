@@ -11,7 +11,9 @@ import SerchInfo from "../../Components/Search-info";
 
 const Main = () => {
   const dispatch = useDispatch();
+  
   useEffect(() => {
+    //? вызывает действие
     dispatch(getLatestMeal());
     dispatch(getPopular());
     dispatch(getRandomMeal());
@@ -21,6 +23,7 @@ const Main = () => {
     <div>
       <Routes>
         <Route path="/" element={<Home />} />
+        {/* тут все наши роутеры */}
         <Route path="/meal/:idMeal/:title" element={<InfoIngredients />} />
         <Route path="/ingredient/:title" element={<PopularInfoIngredients />} />
         <Route path="/meals/:country" element={<CountryInfo />} />
@@ -32,3 +35,4 @@ const Main = () => {
 };
 
 export default Main;
+

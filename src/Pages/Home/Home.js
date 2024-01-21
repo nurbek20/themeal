@@ -27,6 +27,8 @@ const Home = () => {
   const randomItemClick = (title) => {
     navigate(`/ingredient/${title}`);
   };
+
+  // ? Получаем рандомные ингредиент и выводим по циклу всего 4 ингредиент
   const randomItems = [];
   for (let i = 0; i < 4; i++) {
     let randomIndex = Math.floor(Math.random() * randomIngredient.length);

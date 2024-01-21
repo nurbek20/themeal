@@ -10,9 +10,11 @@ const CountryInfo = () => {
   const navigate=useNavigate()
   const dispatch = useDispatch();
   const { countryInfo } = useSelector((state) => state.products);
+  
   useEffect(() => {
     dispatch(getCountryInfoMeal(country));
   }, [country]);
+
   const handleInfo=(id, title)=>{
     navigate(`/meal/${id}/${title}`)
   }

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import instance from "../../Http/settings";
 
+// ? тут все наши состояние
 const initialState = {
   latest: [],
   infoMeal: [],
@@ -14,34 +15,40 @@ const initialState = {
   alfavitMeal: [],
   search: [],
 };
+
+//? Latest Meal по цикл последния блюда 
 export const getLatestMeal = createAsyncThunk(
   "latest/getLatestMeal",
   async (_, { rejectWithValue, dispatch }) => {
     try {
-      const mealNumbers = [
-        53075, 53074, 53073, 53072, 53071, 53070, 53069, 53068,
-      ];
-      const results = await Promise.all(
-        mealNumbers.map(async (number) => {
-          const result = await instance.get(`lookup.php?i=${number}`);
-          return result.data.meals;
-        })
-      );
-      const combinedMeals = results.flat();
-      dispatch(latestMeal(combinedMeals));
+      let lastMealId = 53083; // Предполагаем, что это ID последнего блюда
+      let mealRequests = [];
+
+      for (let i = 0; i < 8; i++) {
+        mealRequests.push(instance.get(`lookup.php?i=${lastMealId - i}`));
+      }
+
+      const responses = await Promise.all(mealRequests);
+      const meals = responses.map(response => response.data.meals[0]);
+
+      dispatch(latestMeal(meals));
     } catch (error) {
       rejectWithValue(error.message);
     }
   }
 );
 
+//? info каждый блюдо по id 
 export const getInfoMeal = createAsyncThunk(
   "infoMeal/getInfoMeal",
   async (elem, { rejectWithValue, dispatch }) => {
+    // ? получаем id и передаем по запросы приходят блюда с информацией
     const result = await instance.get(`lookup.php?i=${elem}`);
     dispatch(ingoIngredientMeal(result.data.meals));
   }
 );
+
+//? Отправляем запрос на популарные блюда
 export const getPopular = createAsyncThunk(
   "popular/getPopular",
   async (_, { rejectWithValue, dispatch }) => {
@@ -50,7 +57,9 @@ export const getPopular = createAsyncThunk(
     dispatch(getRandomIngredients(result.data.meals));
   }
 );
+
 //?filter.php?i=
+// ? Отправляем запросы по id на популярный блюда 
 export const getPopularInfo = createAsyncThunk(
   "popularInfo/getPopularInfo",
   async (elem, { rejectWithValue, dispatch }) => {
@@ -58,6 +67,8 @@ export const getPopularInfo = createAsyncThunk(
     dispatch(popularInfoMeal(response.data.meals));
   }
 );
+
+//? Запрос на рандомные блюда отправляем запрос 8 раз на одну api 
 export const getRandomMeal = createAsyncThunk(
   "randomMeal/getRandomMeal",
   async (_, { rejectWithValue, dispatch }) => {
@@ -75,6 +86,8 @@ export const getRandomMeal = createAsyncThunk(
     }
   }
 );
+
+// ? Отправляем запросы по флаг выводим по народные блюда
 export const getCountryMeals = createAsyncThunk(
   "country/getCountryMeals",
   async (_, { rejectWithValue, dispatch }) => {
@@ -83,6 +96,7 @@ export const getCountryMeals = createAsyncThunk(
   }
 );
 
+//? Отправляем запросы информация по каждый еда по id
 export const getCountryInfoMeal = createAsyncThunk(
   "countryInfo/getCountryInfoMeal",
   async (elem, { rejectWithValue, dispatch }) => {
@@ -90,6 +104,8 @@ export const getCountryInfoMeal = createAsyncThunk(
     dispatch(getCountryInfo(response.data.meals));
   }
 );
+
+// ? Отправляем запрос по Алфавиту
 export const getAlfavitMeals = createAsyncThunk(
   "alfavitMeal/getAlfavitMeals",
   async (elem, { rejectWithValue, dispatch }) => {
@@ -97,6 +113,7 @@ export const getAlfavitMeals = createAsyncThunk(
     dispatch(getAlfavitMeal(res.data.meals));
   }
 );
+// ? Отправляем запрос для пойск 
 export const getSearchMeals = createAsyncThunk(
   "search/getSearchMeals",
   async (elem, { rejectWithValue,dispatch }) => {
@@ -144,6 +161,8 @@ const mealSlice = createSlice({
     }
   },
 });
+
+// ? export нашей функция чтобы получит их потом где нам нужно
 export const {
   latestMeal,
   ingoIngredientMeal,
